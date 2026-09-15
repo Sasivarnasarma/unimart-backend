@@ -2,7 +2,7 @@
 	"info": {
 		"_postman_id": "8e0001d7-2fcd-4afd-a751-c8488d4cfcb8",
 		"name": "UniMart API Collection (Backend Specs)",
-		"description": "This collection contains pre-configured test requests to verify the UniMart campus marketplace REST APIs. It covers service health checks, user registration, JWT logins, user profile management (/me), category creation, and product listing catalog retrieval.",
+		"description": "This collection contains pre-configured test requests to verify the UniMart campus marketplace REST APIs. It covers service health checks, user registration, JWT logins, user profile management (/me), category management, product listing catalog search/pagination/gallery, and soft-archival.",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
 	"item": [
@@ -13,7 +13,7 @@
 				{
 					"name": "Check Database & Health",
 					"request": {
-						"description": "Checks the status of the unimart-backend service and probes the local MySQL database. It executes a test query (`SELECT 1`) to check if the database connection is fully up and running. Response status will show `CONNECTED` if successful.",
+						"description": "Checks the status of the unimart-backend service and probes the local MySQL database.",
 						"method": "GET",
 						"header": [],
 						"url": {
@@ -33,7 +33,7 @@
 				{
 					"name": "Service Ping",
 					"request": {
-						"description": "A simple public heartbeat ping checks if the Spring Boot application server is responsive. Returns `UP` status and the current timestamp.",
+						"description": "A simple public heartbeat ping checks if the Spring Boot application server is responsive.",
 						"method": "GET",
 						"header": [],
 						"url": {
@@ -59,7 +59,7 @@
 				{
 					"name": "Register User",
 					"request": {
-						"description": "Creates a new user profile in the database. The `universityEmail` must be a valid, unique email address. The password will be hashed securely via BCrypt before saving. Returns user details, excluding the password hash, with HTTP Status 201 (Created).",
+						"description": "Creates a new user profile in the database.",
 						"method": "POST",
 						"header": [
 							{
@@ -90,7 +90,7 @@
 				{
 					"name": "Login User (Get JWT)",
 					"request": {
-						"description": "Authenticates the user by comparing credentials. If successful, generates and returns a signed JWT Bearer token containing scopes and user information. Copy the token from the response for secure requests.",
+						"description": "Authenticates the user by comparing credentials and generates a signed JWT token.",
 						"method": "POST",
 						"header": [
 							{
@@ -121,7 +121,7 @@
 				{
 					"name": "Get Current User Profile (/me)",
 					"request": {
-						"description": "Retrieves the currently authenticated user's profile details. Requires Bearer Token authorization header.",
+						"description": "Retrieves current authenticated user details.",
 						"method": "GET",
 						"header": [
 							{
@@ -148,7 +148,7 @@
 				{
 					"name": "Update User Profile (/me)",
 					"request": {
-						"description": "Updates editable profile fields (fullName) for the currently authenticated user.",
+						"description": "Updates profile details for the currently authenticated user.",
 						"method": "PUT",
 						"header": [
 							{
@@ -185,12 +185,12 @@
 		},
 		{
 			"name": "Categories Management",
-			"description": "APIs to set up and query active product catalog categories.",
+			"description": "APIs to set up and query product catalog categories.",
 			"item": [
 				{
 					"name": "Create Category",
 					"request": {
-						"description": "Registers a new product/service category (e.g. Textbooks, Electronics, Services). Category names must be unique. Active defaults to `true`.",
+						"description": "Registers a new product category.",
 						"method": "POST",
 						"header": [
 							{
@@ -220,7 +220,7 @@
 				{
 					"name": "Get Categories List",
 					"request": {
-						"description": "Lists all active categories in the system. Use this to get valid category IDs prior to posting a listing.",
+						"description": "Lists all active categories.",
 						"method": "GET",
 						"header": [],
 						"url": {
@@ -236,18 +236,33 @@
 						}
 					},
 					"response": []
-				}
-			]
-		},
-		{
-			"name": "Marketplace Listings",
-			"description": "APIs to create, filter, and fetch campus listings.",
-			"item": [
+				},
 				{
-					"name": "Create Listing",
+					"name": "Get Category by ID",
 					"request": {
-						"description": "Creates a product listing. Pre-validates that `sellerId` and `categoryId` refer to existing records in the database. Validates that the price is positive. Optimistic locking defaults to version 1.",
-						"method": "POST",
+						"description": "Gets details of a category by ID.",
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/categories/1",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"categories",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update Category",
+					"request": {
+						"description": "Updates category name or active status.",
+						"method": "PUT",
 						"header": [
 							{
 								"key": "Content-Type",
@@ -257,7 +272,70 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n  \"sellerId\": 1,\n  \"categoryId\": 1,\n  \"title\": \"Introduction to Java Programming Textbook\",\n  \"description\": \"Like-new condition. Essential reference for level 2 B.Sc. IT modules.\",\n  \"price\": 2500.00\n}"
+							"raw": "{\n  \"name\": \"Course Textbooks\",\n  \"active\": true\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/categories/1",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"categories",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Soft Delete Category",
+					"request": {
+						"description": "Deactivates a category (sets active = false).",
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/categories/1",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"categories",
+								"1"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Marketplace Listings",
+			"description": "APIs to create, filter, search, update, archive, and manage image gallery for catalog listings.",
+			"item": [
+				{
+					"name": "Create Listing",
+					"request": {
+						"description": "Creates a product listing. Seller is automatically bound from authenticated user JWT token.",
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{jwtToken}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"categoryId\": 1,\n  \"title\": \"Introduction to Java Programming Textbook\",\n  \"description\": \"Like-new condition. Essential reference for level 2 B.Sc. IT modules.\",\n  \"price\": 2500.00,\n  \"images\": [\n    {\n      \"imageUrl\": \"https://example.com/images/java-book-front.jpg\",\n      \"sortOrder\": 1\n    }\n  ]\n}"
 						},
 						"url": {
 							"raw": "{{baseUrl}}/api/v1/listings",
@@ -274,13 +352,13 @@
 					"response": []
 				},
 				{
-					"name": "Get Listings Catalog",
+					"name": "Search Listings (Paginated)",
 					"request": {
-						"description": "Fetches all listings currently posted on the marketplace. Supports an optional `categoryId` query parameter to filter by category: `GET /api/v1/listings?categoryId=1`.",
+						"description": "Searches listings with specifications filter (q, categoryId, status) and pagination parameters.",
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{baseUrl}}/api/v1/listings",
+							"raw": "{{baseUrl}}/api/v1/listings?q=Java&categoryId=1&page=0&size=10&sort=createdAt,desc",
 							"host": [
 								"{{baseUrl}}"
 							],
@@ -288,6 +366,28 @@
 								"api",
 								"v1",
 								"listings"
+							],
+							"query": [
+								{
+									"key": "q",
+									"value": "Java"
+								},
+								{
+									"key": "categoryId",
+									"value": "1"
+								},
+								{
+									"key": "page",
+									"value": "0"
+								},
+								{
+									"key": "size",
+									"value": "10"
+								},
+								{
+									"key": "sort",
+									"value": "createdAt,desc"
+								}
 							]
 						}
 					},
@@ -296,7 +396,7 @@
 				{
 					"name": "Get Listing Details",
 					"request": {
-						"description": "Fetches the full details of a single catalog listing matching the supplied `id` path parameter, including seller name and category name.",
+						"description": "Fetches details of a single listing matching the supplied ID path parameter.",
 						"method": "GET",
 						"header": [],
 						"url": {
@@ -308,6 +408,135 @@
 								"api",
 								"v1",
 								"listings",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update Listing",
+					"request": {
+						"description": "Updates an existing listing. Requires seller authorization.",
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{jwtToken}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"categoryId\": 1,\n  \"title\": \"Updated Java Textbook Title\",\n  \"description\": \"Updated description text.\",\n  \"price\": 2200.00\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/listings/1",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"listings",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Archive Listing (Soft Delete)",
+					"request": {
+						"description": "Soft archives a listing (sets status = inactive). Throws 409 Conflict if sold.",
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{jwtToken}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/listings/1",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"listings",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Add Gallery Image to Listing",
+					"request": {
+						"description": "Adds a new gallery image to a listing. Requires seller authorization.",
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{jwtToken}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"imageUrl\": \"https://example.com/images/java-book-back.jpg\",\n  \"sortOrder\": 2\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/listings/1/images",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"listings",
+								"1",
+								"images"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Remove Gallery Image from Listing",
+					"request": {
+						"description": "Removes a gallery image by image ID. Requires seller authorization.",
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{jwtToken}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/listings/1/images/1",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"listings",
+								"1",
+								"images",
 								"1"
 							]
 						}

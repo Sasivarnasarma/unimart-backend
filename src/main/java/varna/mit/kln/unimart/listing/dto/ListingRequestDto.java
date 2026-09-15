@@ -1,6 +1,8 @@
 package varna.mit.kln.unimart.listing.dto;
 
 import java.math.BigDecimal;
+import java.util.List;
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -8,7 +10,6 @@ import varna.mit.kln.unimart.listing.entity.ListingStatus;
 
 public class ListingRequestDto {
 
-    @NotNull(message = "Seller ID is required")
     private Integer sellerId;
 
     @NotNull(message = "Category ID is required")
@@ -24,6 +25,9 @@ public class ListingRequestDto {
     private BigDecimal price;
 
     private ListingStatus status = ListingStatus.available;
+
+    @Valid
+    private List<ListingImageRequestDto> images;
 
     public ListingRequestDto() {
     }
@@ -74,5 +78,13 @@ public class ListingRequestDto {
 
     public void setStatus(ListingStatus status) {
         this.status = status;
+    }
+
+    public List<ListingImageRequestDto> getImages() {
+        return images;
+    }
+
+    public void setImages(List<ListingImageRequestDto> images) {
+        this.images = images;
     }
 }

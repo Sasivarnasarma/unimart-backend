@@ -2,7 +2,11 @@ package varna.mit.kln.unimart.listing.dto;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
 import varna.mit.kln.unimart.listing.entity.Listing;
+import varna.mit.kln.unimart.listing.entity.ListingImage;
 import varna.mit.kln.unimart.listing.entity.ListingStatus;
 
 public class ListingResponseDto {
@@ -19,11 +23,16 @@ public class ListingResponseDto {
     private Integer version;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
+    private List<ListingImageResponseDto> images = new ArrayList<>();
 
     public ListingResponseDto() {
     }
 
     public ListingResponseDto(Listing listing) {
+        this(listing, null);
+    }
+
+    public ListingResponseDto(Listing listing, List<ListingImage> images) {
         this.id = listing.getId();
         if (listing.getSeller() != null) {
             this.sellerId = listing.getSeller().getId();
@@ -40,6 +49,11 @@ public class ListingResponseDto {
         this.version = listing.getVersion();
         this.createdAt = listing.getCreatedAt();
         this.updatedAt = listing.getUpdatedAt();
+        if (images != null && !images.isEmpty()) {
+            this.images = images.stream()
+                    .map(ListingImageResponseDto::new)
+                    .collect(Collectors.toList());
+        }
     }
 
     public Integer getId() {
@@ -136,5 +150,13 @@ public class ListingResponseDto {
 
     public void setUpdatedAt(LocalDateTime updatedAt) {
         this.updatedAt = updatedAt;
+    }
+
+    public List<ListingImageResponseDto> getImages() {
+        return images;
+    }
+
+    public void setImages(List<ListingImageResponseDto> images) {
+        this.images = images;
     }
 }
