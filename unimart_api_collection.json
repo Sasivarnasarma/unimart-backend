@@ -913,6 +913,154 @@
 								"1"
 							]
 						}
+					}
+				}
+			]
+		},
+		{
+			"name": "Reviews & Ratings",
+			"description": "Handles order-bound buyer review submissions, ratings, seller summaries, and review management.",
+			"item": [
+				{
+					"name": "Submit Review",
+					"request": {
+						"description": "Submits a review for a completed order. Only buyer of completed order can post.",
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{jwtToken}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"orderId\": 1,\n  \"rating\": 5,\n  \"comment\": \"Excellent item condition, fast delivery!\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/reviews",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"reviews"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Seller Reviews",
+					"request": {
+						"description": "Retrieves paginated reviews received by a seller.",
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/reviews/seller/1",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"reviews",
+								"seller",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Seller Rating Summary",
+					"request": {
+						"description": "Retrieves average rating score and total review count for a seller.",
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/reviews/seller/1/summary",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"reviews",
+								"seller",
+								"1",
+								"summary"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update Review",
+					"request": {
+						"description": "Updates rating or comment of a review by its author.",
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{jwtToken}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"rating\": 5,\n  \"comment\": \"Updated comment: absolute pleasure doing business with this seller!\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/reviews/1",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"reviews",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Review",
+					"request": {
+						"description": "Deletes a review by its author.",
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{jwtToken}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/reviews/1",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"reviews",
+								"1"
+							]
+						}
 					},
 					"response": []
 				}
