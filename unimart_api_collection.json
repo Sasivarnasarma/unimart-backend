@@ -544,6 +544,185 @@
 					"response": []
 				}
 			]
+		},
+		{
+			"name": "Buyer-Seller Chat",
+			"description": "APIs to initiate conversations, fetch chat rooms, exchange messages, and manage read receipts.",
+			"item": [
+				{
+					"name": "Start or Get Conversation",
+					"request": {
+						"description": "Initiates or retrieves a conversation room for a specific listing between buyer and seller. Requires Bearer Token authorization.",
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{jwtToken}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"listingId\": 1\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/chat/conversations",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"chat",
+								"conversations"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get User Conversations List",
+					"request": {
+						"description": "Lists all active conversation rooms for the authenticated user (as buyer or seller).",
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{jwtToken}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/chat/conversations",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"chat",
+								"conversations"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Conversation Messages (Paginated)",
+					"request": {
+						"description": "Fetches paginated message history for a conversation. Enforces participant authorization.",
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{jwtToken}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/chat/conversations/1/messages?page=0&size=20&sort=createdAt,desc",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"chat",
+								"conversations",
+								"1",
+								"messages"
+							],
+							"query": [
+								{
+									"key": "page",
+									"value": "0"
+								},
+								{
+									"key": "size",
+									"value": "20"
+								},
+								{
+									"key": "sort",
+									"value": "createdAt,desc"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Send Message",
+					"request": {
+						"description": "Posts a new message in a conversation. Enforces participant authorization.",
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{jwtToken}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"messageText\": \"Hi, is this textbook still available for purchase?\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/chat/conversations/1/messages",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"chat",
+								"conversations",
+								"1",
+								"messages"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Mark Messages as Read",
+					"request": {
+						"description": "Marks all unread incoming messages in a conversation as read.",
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{jwtToken}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/chat/conversations/1/read",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"chat",
+								"conversations",
+								"1",
+								"read"
+							]
+						}
+					},
+					"response": []
+				}
+			]
 		}
 	],
 	"event": [
