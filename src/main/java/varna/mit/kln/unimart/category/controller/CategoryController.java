@@ -8,7 +8,7 @@ import varna.mit.kln.unimart.category.entity.Category;
 import varna.mit.kln.unimart.category.service.CategoryService;
 
 @RestController
-@RequestMapping("/api/v1/public/categories")
+@RequestMapping("/api/v1/categories")
 public class CategoryController {
 
     private final CategoryService categoryService;

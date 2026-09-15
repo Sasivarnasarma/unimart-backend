@@ -4,6 +4,7 @@ import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.jwt.JwtClaimsSet;
 import org.springframework.security.oauth2.jwt.JwtEncoder;
@@ -13,10 +14,14 @@ import org.springframework.transaction.annotation.Transactional;
 
 import varna.mit.kln.unimart.auth.dto.LoginRequestDto;
 import varna.mit.kln.unimart.auth.dto.LoginResponseDto;
+import varna.mit.kln.unimart.auth.dto.UserProfileResponseDto;
+import varna.mit.kln.unimart.auth.dto.UserProfileUpdateRequestDto;
 import varna.mit.kln.unimart.auth.dto.UserRequestDto;
 import varna.mit.kln.unimart.auth.dto.UserResponseDto;
 import varna.mit.kln.unimart.auth.entity.User;
 import varna.mit.kln.unimart.auth.repository.UserRepository;
+import varna.mit.kln.unimart.common.exception.ConflictException;
+import varna.mit.kln.unimart.common.exception.ResourceNotFoundException;
 
 @Service
 public class AuthServiceImpl implements AuthService {
@@ -30,7 +35,7 @@ public class AuthServiceImpl implements AuthService {
             UserRepository userRepository,
             PasswordEncoder passwordEncoder,
             JwtEncoder jwtEncoder,
-            @Value("${app.security.access-minutes}") int accessMinutes) {
+            @Value("${app.security.access-minutes:1440}") int accessMinutes) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.jwtEncoder = jwtEncoder;
@@ -41,7 +46,7 @@ public class AuthServiceImpl implements AuthService {
     @Transactional
     public UserResponseDto registerUser(UserRequestDto requestDto) {
         if (userRepository.findByUniversityEmail(requestDto.getUniversityEmail()).isPresent()) {
-            throw new IllegalArgumentException("Email is already registered");
+            throw new ConflictException("Email is already registered");
         }
 
         User user = new User();
@@ -59,26 +64,46 @@ public class AuthServiceImpl implements AuthService {
     @Transactional(readOnly = true)
     public LoginResponseDto loginUser(LoginRequestDto requestDto) {
         User user = userRepository.findByUniversityEmail(requestDto.getUniversityEmail())
-                .orElseThrow(() -> new IllegalArgumentException("Invalid email or password"));
+                .orElseThrow(() -> new BadCredentialsException("Invalid email or password"));
 
         if (!passwordEncoder.matches(requestDto.getPassword(), user.getPasswordHash())) {
-            throw new IllegalArgumentException("Invalid email or password");
+            throw new BadCredentialsException("Invalid email or password");
         }
 
         Instant now = Instant.now();
         Instant expiresAt = now.plus(accessMinutes, ChronoUnit.MINUTES);
 
         JwtClaimsSet claims = JwtClaimsSet.builder()
-                .issuer("self")
+                .issuer("unimart-backend")
                 .issuedAt(now)
                 .expiresAt(expiresAt)
                 .subject(user.getUniversityEmail())
                 .claim("scope", user.getRole().name())
                 .claim("userId", user.getId())
+                .claim("fullName", user.getFullName())
                 .build();
 
         String tokenValue = jwtEncoder.encode(JwtEncoderParameters.from(claims)).getTokenValue();
 
         return new LoginResponseDto(tokenValue, accessMinutes, new UserResponseDto(user));
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public UserProfileResponseDto getUserProfile(String email) {
+        User user = userRepository.findByUniversityEmail(email)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found with email: " + email));
+        return new UserProfileResponseDto(user);
+    }
+
+    @Override
+    @Transactional
+    public UserProfileResponseDto updateUserProfile(String email, UserProfileUpdateRequestDto requestDto) {
+        User user = userRepository.findByUniversityEmail(email)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found with email: " + email));
+
+        user.setFullName(requestDto.getFullName().trim());
+        User updatedUser = userRepository.save(user);
+        return new UserProfileResponseDto(updatedUser);
     }
 }

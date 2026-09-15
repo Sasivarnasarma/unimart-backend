@@ -10,7 +10,7 @@ import varna.mit.kln.unimart.listing.dto.ListingResponseDto;
 import varna.mit.kln.unimart.listing.service.ListingService;
 
 @RestController
-@RequestMapping("/api/v1/public/listings")
+@RequestMapping("/api/v1/listings")
 public class ListingController {
 
     private final ListingService listingService;

@@ -10,12 +10,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/api/v1/public")
-public class PublicController {
+@RequestMapping("/api/v1")
+public class SystemController {
 
     private final JdbcTemplate jdbcTemplate;
 
-    public PublicController(JdbcTemplate jdbcTemplate) {
+    public SystemController(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }
 
