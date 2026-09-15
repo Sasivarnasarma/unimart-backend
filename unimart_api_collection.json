@@ -1,0 +1,293 @@
+{
+	"info": {
+		"_postman_id": "8e0001d7-2fcd-4afd-a751-c8488d4cfcb8",
+		"name": "UniMart API Collection (Backend Specs)",
+		"description": "This collection contains pre-configured test requests to verify the UniMart campus marketplace REST APIs. It covers service health checks, user registration, JWT logins, category creation, and product listing catalog retrieval.",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "System Diagnostics",
+			"description": "Endpoints to check if the backend application is running and verify active database connectivity.",
+			"item": [
+				{
+					"name": "Check Database & Health",
+					"request": {
+						"description": "Checks the status of the unimart-backend service and probes the local MySQL database. It executes a test query (`SELECT 1`) to check if the database connection is fully up and running. Response status will show `CONNECTED` if successful.",
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/public/health",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"public",
+								"health"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Service Ping",
+					"request": {
+						"description": "A simple public heartbeat ping checks if the Spring Boot application server is responsive. Returns `UP` status and the current timestamp.",
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/public/ping",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"public",
+								"ping"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Authentication & Accounts",
+			"description": "Handles user registration and session tokens management.",
+			"item": [
+				{
+					"name": "Register User",
+					"request": {
+						"description": "Creates a new user profile in the database. The `universityEmail` must be a valid, unique email address. The password will be hashed securely via BCrypt before saving. Returns user details, excluding the password hash, with HTTP Status 201 (Created).",
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"universityEmail\": \"student@kln.ac.lk\",\n  \"password\": \"securepassword123\",\n  \"fullName\": \"Student Seller\",\n  \"role\": \"seller\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/public/auth/register",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"public",
+								"auth",
+								"register"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Login User (Get JWT)",
+					"request": {
+						"description": "Authenticates the user by comparing credentials. If successful, generates and returns a signed RS256/HS256 JSON Web Token (JWT) Bearer token containing scopes and user information. Copy the token from the response for secure requests.",
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"universityEmail\": \"student@kln.ac.lk\",\n  \"password\": \"securepassword123\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/public/auth/login",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"public",
+								"auth",
+								"login"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Categories Management",
+			"description": "APIs to set up and query active product catalog categories.",
+			"item": [
+				{
+					"name": "Create Category",
+					"request": {
+						"description": "Registers a new product/service category (e.g. Textbooks, Electronics, Services). Category names must be unique. Active defaults to `true`.",
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"Textbooks\",\n  \"active\": true\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/public/categories",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"public",
+								"categories"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Categories List",
+					"request": {
+						"description": "Lists all active categories in the system. Use this to get valid category IDs prior to posting a listing.",
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/public/categories",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"public",
+								"categories"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Marketplace Listings",
+			"description": "APIs to create, filter, and fetch campus listings.",
+			"item": [
+				{
+					"name": "Create Listing",
+					"request": {
+						"description": "Creates a product listing. Pre-validates that `sellerId` and `categoryId` refer to existing records in the database. Validates that the price is positive. Optimistic locking defaults to version 1.",
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"sellerId\": 1,\n  \"categoryId\": 1,\n  \"title\": \"Introduction to Java Programming Textbook\",\n  \"description\": \"Like-new condition. Essential reference for level 2 B.Sc. IT modules.\",\n  \"price\": 2500.00\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/public/listings",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"public",
+								"listings"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Listings Catalog",
+					"request": {
+						"description": "Fetches all listings currently posted on the marketplace. Supports an optional `categoryId` query parameter to filter by category: `GET /api/v1/public/listings?categoryId=1`.",
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/public/listings",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"public",
+								"listings"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Listing Details",
+					"request": {
+						"description": "Fetches the full details of a single catalog listing matching the supplied `id` path parameter, including seller name and category name.",
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/public/listings/1",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"public",
+								"listings",
+								"1"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "baseUrl",
+			"value": "http://localhost:8080",
+			"type": "string"
+		}
+	]
+}
