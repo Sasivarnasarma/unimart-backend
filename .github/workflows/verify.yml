@@ -26,6 +26,9 @@ jobs:
           distribution: "temurin"
           cache: "maven"
 
+      - name: Make Maven Wrapper Executable
+        run: chmod +x ./mvnw
+
       - name: Compile Code
         run: ./mvnw clean compile
 
@@ -68,6 +71,9 @@ jobs:
           JWT_SECRET=RTY0ZDRjOGU0NDcwOGRhODQxZWI4ZTk3YjNlODIyNjQ4MmRkY2M5YTkyNjg3NmI4ZDlkYWI4Zjc4MjBlZWE5Yw==
           JWT_ACCESS_MINUTES=15
           EOF
+
+      - name: Make Maven Wrapper Executable
+        run: chmod +x ./mvnw
 
       - name: Run Test Suite
         run: ./mvnw clean test
