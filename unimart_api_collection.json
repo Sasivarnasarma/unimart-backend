@@ -1061,6 +1061,119 @@
 								"1"
 							]
 						}
+					}
+				}
+			]
+		},
+		{
+			"name": "Notifications",
+			"description": "Handles real-time user notification feeds, unread alert counters, and read state management.",
+			"item": [
+				{
+					"name": "Get User Notifications",
+					"request": {
+						"description": "Retrieves paginated notifications feed for the authenticated user.",
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{jwtToken}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/notifications",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"notifications"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Unread Notification Count",
+					"request": {
+						"description": "Retrieves unread notification count badge for the authenticated user.",
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{jwtToken}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/notifications/unread-count",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"notifications",
+								"unread-count"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Mark Notification as Read",
+					"request": {
+						"description": "Marks a single notification as read.",
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{jwtToken}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/notifications/1/read",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"notifications",
+								"1",
+								"read"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Mark All Notifications as Read",
+					"request": {
+						"description": "Marks all unread notifications for the authenticated user as read.",
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{jwtToken}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/notifications/read-all",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"notifications",
+								"read-all"
+							]
+						}
 					},
 					"response": []
 				}
